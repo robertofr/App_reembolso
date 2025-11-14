@@ -99,6 +99,9 @@ function expenseAdd(newExpense){
         // Adciona o item na lista
         expenseList.append(expenseItem)
 
+        // Limpa o formulário para adicionar um novo item.
+        formClean()
+
         // Atualiza os totais.
         updateTotals()
 
@@ -126,7 +129,7 @@ function updateTotals(){
         const itemAmount = items[item].querySelector(".expense-amount")
 
         // Remover caracteres não númericos e substitui a vírgula por ponto
-        let value = itemAmount.textContent.replace(/[^\d]/g, "").replace(",",".")
+        let value = itemAmount.textContent.replace(/[^\d,]/g, "").replace(",",".")
 
         // Converte o valor para float.
         value = parseFloat(value)
@@ -142,10 +145,45 @@ function updateTotals(){
        total += Number(value)
       } 
 
-        expenseTotal.textContent = total
+    //Criando a span para adcionar o R$ formatado
+      const symbolBRL = document.createElement("small")
+      symbolBRL.textContent = "R$"
+
+      // Formata o valor e remove o R$ que será exibido pela small com um estilo custumizado 
+      total = formatCurrencyBRL(total).toUpperCase().replace("R$", "")
+
+      // Limpa o conteúdo do elemento
+      expenseTotal.innerHTML = ""
+
+      // Adiciona o simbolo da moeda e o valor formatado
+      expenseTotal.append(symbolBRL, total)
 
     } catch (error) {
       console.log(error)
       alert("Não foi possível atualizar os totais.")
     }
+}
+
+// Evento que captura o clique nos itens da lista
+
+expenseList.addEventListener("click", function(event){
+    // Verifica se o elemento clicado é o ícone de remover.
+    if(event.target.classList.contains("remove-icon")){
+        //Obtem o LI pai do elemento clicado.
+        const item = event.target.closest(".expense")
+        //remove o item da lista
+        item.remove()
+    }
+    //Atualiza os totais
+    updateTotals()
+})
+
+function formClean(){
+    // Limpa o input
+    expense.value = ""
+    category.value = ""
+    amount.value = ""
+
+    //Coloca o Focus no input
+    expense.focus()
 }
